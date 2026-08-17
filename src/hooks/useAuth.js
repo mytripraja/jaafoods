@@ -10,14 +10,19 @@ export function useAuth() {
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
-      setUser(firebaseUser);
-      if (firebaseUser) {
-        const data = await getAdminUser(firebaseUser.uid);
-        setAdminData(data);
-      } else {
-        setAdminData(null);
+      try {
+        setUser(firebaseUser);
+        if (firebaseUser) {
+          const data = await getAdminUser(firebaseUser.uid);
+          setAdminData(data);
+        } else {
+          setAdminData(null);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     });
     return unsub;
   }, []);
